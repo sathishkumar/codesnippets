@@ -15,7 +15,7 @@ mdb='dco'
 
 #Add new products into our image resizer table in dco db.
 echo "Started: Populating new product's image link...";
-echo $(mysql -h$mhost -u$muser -p$mpwd $mdb -s -N -e "INSERT INTO dco_image_resize (adv_id, sku, default_image, feed_id,status) SELECT ci_adv_id, ci_sku, ci_default_image, ci_feed_id,0 as status FROM CatalogItem WHERE ci_adv_id=$adv_id AND ci_sku NOT IN (SELECT sku FROM dco_image_resize WHERE adv_id=$adv_id)");
+echo $(mysql -h$mhost -u$muser -p$mpwd $mdb -s -N -e "INSERT INTO dco_image_resize (adv_id, sku, default_image, feed_id,status) SELECT ci_adv_id, ci_sku, ci_default_image, ci_feed_id,1 as status FROM CatalogItem WHERE ci_adv_id=$adv_id AND ci_sku NOT IN (SELECT sku FROM dco_image_resize WHERE adv_id=$adv_id)");
 echo "Completed: Populating new product's image link.";
 
 #echo $(mysql -h$mhost -u$muser -p$mpwd $mdb -s -N -e "update dco_image_resize set default_image=substring(default_image,10,100) limit 10");
