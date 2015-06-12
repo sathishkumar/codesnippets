@@ -119,7 +119,7 @@ class ProcessReq
 	end
 end
 
-FACEBOOK_ACCESS_TOKEN='CAAEDOFD5jeEBABSiQpiqu5Dm6BjPziaOaowD0KfHECh5cSdFLPa1cAYYpeyQ0cW8ZC3roqLNvry4BIHwsZAIrpuSSRzOjGD0Y78FPsOrzHC0wtTOr8YFk12GyK7LhTtWZBMUHUTLjj9UOUf3L723KYnZCZCrfbjwv7qb3ZCKc2uZCxcMAUucwlxJkwXZAeFyy7c63ml5YZAfRpjYUZBRAmeegm'
+FACEBOOK_ACCESS_TOKEN=
 
 fb_api=(ENTITY=="ADSET"? ENTITY_ID : ENTITY_ID+ '/'+ API_CALL)
 fb_url = URI.parse('https://graph.facebook.com/v2.2/'+ fb_api + '?fields=name,targeting,bid_type,bid_info,daily_budget'+ '&access_token=' + FACEBOOK_ACCESS_TOKEN) 
