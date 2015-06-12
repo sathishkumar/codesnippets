@@ -1,0 +1,71 @@
+B_ACCESSTOKEN=CAAEDOFD5jeEBALwRs5nurC7GO6RE7X3kEWrhxHMG4ClB4wRV7OwDJHjINfopuXDwFMVZCkr6cyaWEzVaAzhWZCnL8AZCMR6SOX1OZAbDzw4EOHdXffqJWco2G8HSM4xZAZCelMXgMz2ZBqjARoZAE2EyqnP4pzQanef1aTkIyZBCVd41orSgRWR7czdiEbnQWrxiEmPsBG37ZBGj5AHxeZCyKsU
+
+ADV_ACCESSTOKEN=CAAIfSjAD3wwBAA6FcKqz4MwIjZBqZB98mR5fh3NSUvqrMU75ocZCZApmEwX5S01kEhK8r3lxhcE5tOvOZCFEilKAxqQEZB5ZBJsk0ECUf7XvGphUDuO13rbZBTFjzcWslZAAUtESbo6DGNsKBgiIZBznjpTTSYiS21CFP8kGXUQ58BdYJuGllEs7CIV5PUpzqMZBGz8QeGOktyGRq8ZAXqV5CbAz
+
+SYS_ADMIN_TOKEN=CAAEDOFD5jeEBABSiQpiqu5Dm6BjPziaOaowD0KfHECh5cSdFLPa1cAYYpeyQ0cW8ZC3roqLNvry4BIHwsZAIrpuSSRzOjGD0Y78FPsOrzHC0wtTOr8YFk12GyK7LhTtWZBMUHUTLjj9UOUf3L723KYnZCZCrfbjwv7qb3ZCKc2uZCxcMAUucwlxJkwXZAeFyy7c63ml5YZAfRpjYUZBRAmeegm
+
+BUSINESS_ID=576155635861565
+USER_ID=20303877
+
+SESSION=##session_id
+ADV_AD_ACCOUNT_ID=##adv_ad_account_id
+
+ADV_ID=##advertiser_id
+ADV_NAME=##advertiser_name
+DATA_PIXEL_ID=##data_pixel_id
+CONV_PIXEL_ID=##conversion_pixel_id
+
+#Audience Details
+#----------------
+AUD_NAME=##audience_name
+AUD_EVENT=##audience_event
+RETENTION_IN_SEC=##audience_retension_sec
+EXC_AUD_EVENT=##exc_audience_event
+EXC_RETENTION_IN_SEC=##exc_audience_retension_sec
+
+# Example: EXC_CUS_AUD="[{'id':'6031828627704','name':'Caratlane_Rec2'}]"
+EXC_CUS_AUD=##exclude_custom_audiences_in_aud
+INC_CUS_AUD=##include_custom_audiences_in_aud
+
+DPA_LEVEL_START=##dpa_startwith
+#Required Fields:
+#----------------
+CATALOG_ID=##ex_catalog_id
+PROD_SET_ID=##ex_prod_set_id
+PROD_AUD=##ex_audience_id
+
+#FEED Schedule:
+#-------------
+INTV=##feed_intvl
+FEED_URL=http://tor.atomex.net/social_dco_feed
+
+#Exam: INTV_TYPE (hour, day_of_week, day_of_month)
+INTV_TYPE=##feedintvl_type
+INTV_VALUE=##feedintvl_value
+
+#BID & BUDGET
+#-------------
+BID_TYPE=##bid_type
+BID_ACTION=##bid_info
+BID_P=##bid_value
+DAILY_BUD=##daily_budget
+
+#Product Set
+#-----------
+SET_NAME=##product_set_name
+SET_FILTER=##product_set_filter
+CAMP_STATUS=##campaign_group_status
+ADSET_STATUS=##adset_status
+COUN=##country
+PLACEMENT_TYPE=##placement
+ADSET_EXC_CUS_AUD=##exclude_custom_audiences
+ADSET_INC_CUS_AUD=##include_custom_audiences
+
+TEMP_CREATIVE_MSG=##creative_message
+MACRO_NAME=##macro_name
+MACRO_DESC=##macro_description
+PROD_COUNT=##max_product_count
+ADV_PAGE_ID=##page_id
+ADV_URL=##advertiser_link
+
+
