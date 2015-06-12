@@ -3,6 +3,7 @@ ADV_ID=$1
 DIR=/home/km/properties
 #/home/skumar/properties
 debug=$2
+LEVEL_STARTED=false
 
 . ${DIR}/${ADV_ID}.txt
 echo $B_ACCESSTOKEN
@@ -13,6 +14,7 @@ ADV_ENTITY_FB_URL=${FB_URL}/act_${ADV_AD_ACCOUNT_ID}
 FEED=${ADV_ID}_feed.txt.gz
 
 IDExtract(){
+#	echo "response -- $1"
 	SET=$( echo "$1" | jq ".id") 
 	if [ "$SET" = "" ]; then
 		echo $1;	
@@ -23,13 +25,15 @@ IDExtract(){
 	fi
 }
 
+if [ "$DPA_LEVEL_START" = "CATALOG" ]; then
+LEVEL_STARTED=true
+echo " ********* Starting Job from Catalog level *********";
 echo "Starting process of Creating FB entities for advertiser: $ADV_ID"
 #Product Catalog:
 #================
 echo "Creating Product Catalog ..."
 CATALOG_ID=$(SET=$(curl -s -X POST -F "name=${ADV_NAME} Catalog Products" -F "access_token=$B_ACCESSTOKEN" ${FB_URL}/${BUSINESS_ID}/product_catalogs); IDExtract "$SET") 
 echo "CATALOG_ID - $CATALOG_ID"
-
 
 #Product Catalog permission for System user:
 #===========================================
@@ -49,22 +53,36 @@ echo "Creating Product Set..."
 PROD_SET_ID=$(SET=$(curl -s -F "name=${ADV_NAME} All Products" -F "filter={}" -F "access_token=$B_ACCESSTOKEN" ${FB_URL}/${CATALOG_ID}/product_sets);IDExtract "$SET") 
 echo "PROD_SET_ID - $PROD_SET_ID"
 
-#Create Product Audience
-#=======================
-#PRODUCT
-echo "Creating Product Audience :: Product only ..."
-PROD_AUD_PROD=$(SET=$(curl -s -F "name=${ADV_NAME} PA - Prod Rec 7"  -F "product_set_id=$PROD_SET_ID"  -F "pixel_id=$DATA_PIXEL_ID" -F 'inclusions=[{"retention_seconds": 604800,"rule": {"event": {"eq": "ViewContent"},}}]' -F 'exclusions=[{"retention_seconds": 604800,"rule": {"event": {"eq": "Purchase"}}},{"retention_seconds": 604800,"rule": {"event": {"eq": "AddToCart"},}}]' -F "access_token=$ADV_ACCESSTOKEN" ${ADV_ENTITY_FB_URL}/product_audiences ); IDExtract "$SET")
-echo "PROD_AUD_PRODUCT  -- $PROD_AUD_PROD \n"
-#CART
-echo "Creating Product Audience :: Cart only ..."
-PROD_AUD_CART=$(SET=$(curl -s -F "name=${ADV_NAME} PA - Cart Rec 7"  -F "product_set_id=$PROD_SET_ID"  -F "pixel_id=$DATA_PIXEL_ID" -F 'inclusions=[{"retention_seconds": 604800,"rule": {"event": {"eq": "AddToCart"},}}]' -F 'exclusions=[{"retention_seconds": 604800,"rule": {"event": {"eq": "Purchase"}}}]' -F "access_token=$ADV_ACCESSTOKEN" ${ADV_ENTITY_FB_URL}/product_audiences ); IDExtract "$SET")
-echo "PROD_AUD_CART  -- $PROD_AUD_CART \n"
-
 #Pixel Product Catalog Preferences
 #=================================
 echo "Associate Pixel with Catalog for event tracking..."
 PIX_CATALOG=$(SET=$(curl -s -F "external_event_sources=[$DATA_PIXEL_ID]" -F "access_token=$B_ACCESSTOKEN" ${FB_URL}/${CATALOG_ID}/external_event_sources); echo "$SET")
 echo "Associationg done -- $PIX_CATALOG \n"
+
+fi # Level starting for catalog ends here.
+
+if [ $LEVEL_STARTED == true -o "$DPA_LEVEL_START" = "AUDIENCE" ]; then
+LEVEL_STARTED=true
+echo " ********* Starting Job from Audience level *********";
+
+#Create Product Audience
+#=======================
+#PRODUCT
+echo "Creating Product Audience :: Product only ..."
+PROD_AUD_PROD=$(SET=$(curl -s -F "name=${ADV_NAME} PA - Prod Rec $REC_DAYS day(s)"  -F "product_set_id=$PROD_SET_ID"  -F "pixel_id=$DATA_PIXEL_ID" -F "inclusions=[{\"retention_seconds\": ${RETENTION_IN_SEC},\"rule\": {\"event\": {\"eq\": \"ViewContent\"},}}]" -F "exclusions=[{\"retention_seconds\": ${RETENTION_IN_SEC},\"rule\": {\"event\": {\"eq\": \"Purchase\"}}},{\"retention_seconds\": ${RETENTION_IN_SEC},\"rule\": {\"event\": {\"eq\": \"AddToCart\"}}},{\"retention_seconds\": ${EXC_RETENTION_IN_SEC},\"rule\": {\"event\": {\"eq\": \"ViewContent\"}}}]" -F "access_token=$ADV_ACCESSTOKEN" ${ADV_ENTITY_FB_URL}/product_audiences ); IDExtract "$SET")
+echo "PROD_AUD_PRODUCT  -- $PROD_AUD_PROD \n"
+#CART
+echo "Creating Product Audience :: Cart only ..."
+PROD_AUD_CART=$(SET=$(curl -s -F "name=${ADV_NAME} PA - Cart Rec $REC_DAYS day(s)"  -F "product_set_id=$PROD_SET_ID"  -F "pixel_id=$DATA_PIXEL_ID" -F "inclusions=[{\"retention_seconds\": ${RETENTION_IN_SEC},\"rule\": {\"event\": {\"eq\": \"AddToCart\"},}}]" -F "exclusions=[{\"retention_seconds\": ${RETENTION_IN_SEC},\"rule\": {\"event\": {\"eq\": \"Purchase\"}}},{\"retention_seconds\": ${EXC_RETENTION_IN_SEC},\"rule\": {\"event\": {\"eq\": \"AddToCart\"}}}]" -F "access_token=$ADV_ACCESSTOKEN" ${ADV_ENTITY_FB_URL}/product_audiences ); IDExtract "$SET")
+echo "PROD_AUD_CART  -- $PROD_AUD_CART \n"
+
+fi # Level starting for Audience ends here.
+
+echo $($LEVEL_STARTED == true)
+if [ $LEVEL_STARTED == true -o  "$DPA_LEVEL_START" = "CAMPAIGN" ]; then
+LEVEL_STARTED=true
+echo " ********* Starting Job from Campaign level *********";
+
 if $debug
 then
 
@@ -72,7 +90,7 @@ then
 #=================
 echo "promoted_object={\"product_catalog_id\":$CATALOG_ID}"
 echo "Creating a Campaign ..."
-CAMP_ID=$(SET=$(curl -s -F "name=${ADV_NAME} DPA Campaign Group" -F 'objective=PRODUCT_CATALOG_SALES' -F "campaign_group_status=$CAMP_STATUS" -F "promoted_object={\"product_catalog_id\":$CATALOG_ID}" -F "access_token=$ADV_ACCESSTOKEN" ${ADV_ENTITY_FB_URL}/adcampaign_groups ); IDExtract "$SET")
+CAMP_ID=$(SET=$(curl -s -F "name=${ADV_NAME} DPA Campaign Group Rec $REC_DAYS day(s)" -F 'objective=PRODUCT_CATALOG_SALES' -F "campaign_group_status=$CAMP_STATUS" -F "promoted_object={\"product_catalog_id\":$CATALOG_ID}" -F "access_token=$ADV_ACCESSTOKEN" ${ADV_ENTITY_FB_URL}/adcampaign_groups ); IDExtract "$SET")
 echo "Campaign -- $CAMP_ID \n"
 
 
@@ -115,7 +133,9 @@ echo "Mobile CART Ad Set -- $MCART_ADSET_ID \n"
 #====================================
 echo 
 echo "Creating a Ad Template Creative ..."
-CREATIVE_ID=$(SET=$(curl -s -X POST -F "name=${ADV_NAME} Dynamic Ad Template Creative" -F "object_story_spec={\"page_id\": $ADV_PAGE_ID,\"template_data\": {\"call_to_action\": {\"type\": \"SHOP_NOW\"},\"message\": \"$TEMP_CREATIVE_MSG\",\"link\": \"$ADV_URL\",\"name\": \"{{product.price}}\",\"description\": \"{{product.name}}\",\"max_product_count\": 5}}" -F "product_set_id=$PROD_SET_ID" -F "access_token=$ADV_ACCESSTOKEN" ${ADV_ENTITY_FB_URL}/adcreatives ); IDExtract "$SET")
+#CREATIVE_ID=$(SET=
+echo $(curl -s -X POST -F "name=${ADV_NAME} Dynamic Ad Template Creative" -F "object_story_spec={\"page_id\": $ADV_PAGE_ID,\"template_data\": {\"call_to_action\": {\"type\": \"SHOP_NOW\"},\"message\": \"$TEMP_CREATIVE_MSG\",\"link\": \"$ADV_URL\",\"name\": \"{{product.price}}\",\"description\": \"{{product.name}}\",\"max_product_count\": 5}}" -F "product_set_id=$PROD_SET_ID" -F "access_token=$ADV_ACCESSTOKEN" ${ADV_ENTITY_FB_URL}/adcreatives ); 
+#IDExtract "$SET")
 echo "Creative Template -- $CREATIVE_ID \n"
 
 #Create Ad Groups
@@ -142,4 +162,4 @@ MCART_AD_ID=$(SET=$(curl -s -X POST -F "name=${ADV_NAME} DPA: Mobile Cart AD" -F
 echo "Mobile CART Creative -- $MCART_AD_ID \n"
 
 fi
-
+fi # Level starting for Campaign ends here.
