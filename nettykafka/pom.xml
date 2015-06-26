@@ -1,0 +1,121 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.sathish.learning</groupId>
+	<artifactId>nettykafka</artifactId>
+	<version>0.1</version>
+	<packaging>jar</packaging>
+	<name>nettykafka</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.0.29.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>com.datastax.cassandra</groupId>
+			<artifactId>cassandra-driver-core</artifactId>
+			<version>2.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka_2.9.2</artifactId>
+			<version>0.8.1.1</version>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>jmxri</artifactId>
+					<groupId>com.sun.jmx</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jms</artifactId>
+					<groupId>javax.jms</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jmxtools</artifactId>
+					<groupId>com.sun.jdmk</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>rpm-maven-plugin</artifactId>
+				<version>2.0.1</version>
+				<extensions>true</extensions>
+
+				<configuration>
+					<copyright>sathish-learning</copyright>
+					<distribution>sathish-learning</distribution>
+					<release>1</release>
+					<group>utilties</group>
+					<packager>learning</packager>
+					<provides>
+						<provide>nettykafka</provide>
+					</provides>
+					<changelogFile>src/changelog</changelogFile>
+					<defineStatements>
+						<defineStatement>_unpackaged_files_terminate_build 0
+						</defineStatement>
+					</defineStatements>
+					<mappings>
+						<mapping>
+							<directory>/opt/nettykafka/bin</directory>
+							<filemode>775</filemode>
+							<username>root</username>
+							<groupname>root</groupname>
+							<sources>
+								<source>
+									<location>src/main/resources/conf</location>
+								</source>
+							</sources>
+						</mapping>
+						<mapping>
+							<directory>/opt/nettykafka/lib</directory>
+							<username>root</username>
+							<groupname>root</groupname>
+							<filemode>775</filemode>
+							<sources>
+								<source>
+									<location>target/nettykafka-${project.version}.jar</location>
+								</source>
+							</sources>
+						</mapping>
+						<mapping>
+							<directory>/opt/nettykafka/lib</directory>
+							<username>root</username>
+							<groupname>root</groupname>
+							<filemode>775</filemode>
+							<dependency />
+						</mapping>
+						<mapping>
+							<directory>/opt/nettykafka/logs</directory>
+							<username>root</username>
+							<groupname>root</groupname>
+							<filemode>775</filemode>
+						</mapping>
+					</mappings>						
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+	
+</project>
