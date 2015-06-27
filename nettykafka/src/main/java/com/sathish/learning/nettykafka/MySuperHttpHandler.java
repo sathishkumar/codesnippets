@@ -1,5 +1,7 @@
 package com.sathish.learning.nettykafka;
 
+import java.io.IOException;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -24,14 +26,14 @@ public class MySuperHttpHandler extends SimpleChannelInboundHandler<Object> {
 	}
 
 	@Override
-	public void channelRead0(ChannelHandlerContext ctx, Object msg) {
+	public void channelRead0(ChannelHandlerContext ctx, Object msg) throws IOException {
 
 		if (msg instanceof HttpRequest) {
 			HttpRequest req = (HttpRequest) msg;
 
 			String reqUrl = req.getUri();
 			String cont = req.getUri().split("/")[1];
-			
+System.out.println(reqUrl);
 			if (cont.equals("request")) {
 				KafkaProducer kp = new KafkaProducer(req);
 				kp.process();
@@ -113,12 +115,19 @@ public class MySuperHttpHandler extends SimpleChannelInboundHandler<Object> {
 
 			ctx.write(response);
 		}
+
 	}
 
 	@SuppressWarnings("null")
 	public Browser[] showReportingUI() {
 		// Load into Cassendra
-		CassandraLoader cl = new CassandraLoader();
+		CassandraLoader cl = null;
+		try {
+			cl = new CassandraLoader();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		Browser[] browsers = cl.readAll();
 
 		cl.closeclientConnection();

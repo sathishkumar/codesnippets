@@ -83,7 +83,7 @@
 							<groupname>root</groupname>
 							<sources>
 								<source>
-									<location>src/main/resources/conf</location>
+									<location>src/main/resources</location>
 								</source>
 							</sources>
 						</mapping>

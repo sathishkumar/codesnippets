@@ -1,5 +1,7 @@
 package com.sathish.learning.nettykafka;
 
+import java.io.IOException;
+
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
@@ -20,7 +22,13 @@ public class GettingStarted {
     	System.out.format("%s %d\n", row.getString("fname"), row.getInt("user_id"));
     	}
     	
-    	CassandraLoader cl = new CassandraLoader();
+    	CassandraLoader cl = null;
+		try {
+			cl = new CassandraLoader();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	cl.readAll();
     }
    

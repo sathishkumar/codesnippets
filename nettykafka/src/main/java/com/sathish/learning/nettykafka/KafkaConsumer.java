@@ -22,7 +22,7 @@ import kafka.javaapi.consumer.SimpleConsumer;
 import kafka.message.MessageAndOffset;
  
 public class KafkaConsumer {
-	static File file = new File("/tmp/consumer.lock");;
+	static File file = new File("/tmp/consumer.lock");
 	
     public static void main(String args[]) {
     	KafkaConsumer example = new KafkaConsumer();
