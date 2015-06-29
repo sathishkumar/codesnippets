@@ -1,3 +1,52 @@
 #Server Setup Ubuntu:
 1) sudo apt-get update
-2) sudo apt-get open-jdk7
+2) sudo apt-get install openjdk-7-jre
+3) Download Apache Kafka and Cassandra
+    Kafka - "wget http://mirror.tcpdiag.net/apache/kafka/0.8.1.1/kafka_2.9.2-0.8.1.1.tgz"
+    Cassandra - "wget http://mirror.metrocast.net/apache/cassandra/2.1.7/apache-cassandra-2.1.7-bin.tar.gz"
+4) Extract and move to /opt folder before running it
+5) Downlaod and Install nettykafka-0.1-1.noarch.rpm (https://github.com/sathishkumar/codesnippets/blob/netty_kafka_cassandra_browser_report_demo/nettykafka/target/rpm/nettykafka/RPMS/noarch/nettykafka-0.1-1.noarch.rpm)
+6) Install RPM (install RPM package if its fresh instance)
+    sudo apt-get install rpm
+    install "rpm -ivh nettykafka-0.1-1.noarch.rpm"
+    delete "rpm -e nettykafka-0.1-1.noarch.rpm"
+    find "rpm -qa nettykafka-0.1-1.noarch.rpm"
+7) Start Zookeeper
+    a) cd /opt/kafka_2.9.2-0.8.1.1
+    b) bin/zookeeper-server-start.sh config/zookeeper.properties
+8) Start Kafka Server (another browser or start zookeeper in daemon mode)
+    a) cd /opt/kafka_2.9.2-0.8.1.1
+    b) bin/kafka-server-start.sh config/server.properties 
+9) Follow this instructions before starting
+    http://wiki.apache.org/cassandra/GettingStarted#Step_2:_Basic_Configuration
+10) Start Cassandra 
+    a) cd /opt/apache-cassandra-2.1.7
+    b) bin/cassandra -f
+11) Create a topic before start our project
+            Configurations:
+              topic-name: User-Agents
+              zookeeper: localhost:2181
+              partition: 1
+              replication: 1
+    a) bin/kafka-topics.sh --create --topic User-Agents --partition 1 --replication-factor 1 --zookeeper localhost:2181
+12) Cassendra Configurations
+    a) Create mykeyspace(like db in mysql)
+        CREATE KEYSPACE mykeyspace WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
+    b) Create Browsers (like table in mysql)
+        CREATE TABLE mykeyspace.Browsers (browser_name text PRIMARY KEY, count counter);
+
+13) Start Netty Server to listen to your each request (web end points are "request" and "report")
+    java -Xmx1024m -classpath :/opt/nettykafka/lib/* com.sathish.learning.nettykafka.DemoNettyKafkaCassendra
+14) Start a Consumer to cosume messages pushed and put into Cassandra. 
+    java -Xmx1024m -classpath :/opt/nettykafka/lib/* com.sathish.learning.nettykafka.KafkaHighLevelConsumer localhost:2181 Learn User-Agents 4
+    Here "Learn" is group id we used. 
+    
+    
+Completed! To See results. 
+
+Give few hits from various browser http://<your-server-ip>:<PORT>/request
+To view reports http://<your-server-ip>:<PORT>/report
+    
+
+    
+    
